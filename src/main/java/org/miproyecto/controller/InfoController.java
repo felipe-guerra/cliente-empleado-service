@@ -2,6 +2,7 @@ package org.miproyecto.controller;
 
 import org.miproyecto.service.InfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,48 +33,21 @@ public class InfoController {
      * un cliente. Se valida que el código proporcionado tenga exactamente
      * 9 dígitos antes de proceder con la consulta.
      *
-     * @param codigo Código único del cliente (debe tener exactamente 9 dígitos)
+     * @param identificacion Código único del cliente (debe tener exactamente 9 dígitos)
      * @return ResponseEntity con el resultado de la solicitud, ya sea un
      *         mensaje de error o la información solicitada.
      */
-    @GetMapping("/cliente/{codigo}")
-    public ResponseEntity<?> getClienteInfo(@PathVariable String codigo) {
+    @GetMapping("/cliente/{identificacion}")
+    public ResponseEntity<?> getClienteInfo(@PathVariable String identificacion) {
         // Validación de que el código del cliente tenga exactamente 9 dígitos
-        if (codigo.length() != 9) {
-            // Si la validación falla, se crea un Map para devolver el mensaje de
-            // error como un objeto JSON
-            Map<String, String> response = new LinkedHashMap<>();
-            response.put("message", "El código debe tener 9 dígitos");
-            // Retorna una respuesta HTTP con un estado de error (400 Bad Request)
-            return ResponseEntity.badRequest().body(response);
-        }
+
         // Si la validación es exitosa, se obtiene la información del cliente a
         // través del servicio
-        return ResponseEntity.ok(infoService.getClienteInfo(codigo));
+        try {
+            return ResponseEntity.ok(infoService.getClienteInfo(identificacion));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente ccnffo encontrado.");
+        }
     }
 
-    /**
-     * Método que maneja las solicitudes GET para obtener la información de
-     * un empleado. Se valida que el código proporcionado tenga exactamente
-     * 9 dígitos antes de proceder con la consulta.
-     *
-     * @param codigo Código único del empleado (debe tener exactamente 9 dígitos)
-     * @return ResponseEntity con el resultado de la solicitud, ya sea un
-     *         mensaje de error o la información solicitada.
-     */
-    @GetMapping("/empleado/{codigo}")
-    public ResponseEntity<?> getEmpleadoInfo(@PathVariable String codigo) {
-        // Validación de que el código del empleado tenga exactamente 9 dígitos
-        if (codigo.length() != 9) {
-            // Si la validación falla, se crea un Map para devolver el mensaje de
-            // error como un objeto JSON
-            Map<String, String> response = new LinkedHashMap<>();
-            response.put("message", "El código debe tener 9 dígitos");
-            // Retorna una respuesta HTTP con un estado de error (400 Bad Request)
-            return ResponseEntity.badRequest().body(response);
-        }
-        // Si la validación es exitosa, se obtiene la información del empleado a
-        // través del servicio
-        return ResponseEntity.ok(infoService.getEmpleadoInfo(codigo));
-    }
 }

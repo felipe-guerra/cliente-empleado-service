@@ -1,9 +1,8 @@
 package org.miproyecto.service;
 
 import org.miproyecto.model.Cliente;
-import org.miproyecto.model.Empleado;
 import org.miproyecto.repository.ClienteRepository;
-import org.miproyecto.repository.EmpleadoRepository;
+import org.miproyecto.util.CifradoAESUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,33 +20,28 @@ public class InfoService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    // Inyección de dependencias para el repositorio de Empleado
-    @Autowired
-    private EmpleadoRepository empleadoRepository;
-
     /**
      * Método que obtiene la información de un cliente por su código.
      * Si no se encuentra, lanza una excepción.
      *
-     * @param codigo Código del cliente
+     * @param identificacion Código del cliente
      * @return Cliente con la información solicitada
      */
-    public Cliente getClienteInfo(String codigo) {
+    public Cliente getClienteInfo(String identificacion) throws Exception {
         // Busca al cliente en el repositorio por su código
-        return clienteRepository.findById(codigo)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+            Cliente cliente = clienteRepository.findById(identificacion)
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+            String clave = "1234567890abcdef"; // 16 caracteres
+            String textoOriginal = cliente.getNumeroCliente();
+
+            String cifrado = CifradoAESUtil.cifrar(textoOriginal, clave);
+            System.out.println("Texto cifrado: " + cifrado);
+
+            cliente.setNumeroCliente(cifrado);
+            return cliente;
+
     }
 
-    /**
-     * Método que obtiene la información de un empleado por su código.
-     * Si no se encuentra, lanza una excepción.
-     *
-     * @param codigo Código del empleado
-     * @return Empleado con la información solicitada
-     */
-    public Empleado getEmpleadoInfo(String codigo) {
-        // Busca al empleado en el repositorio por su código
-        return empleadoRepository.findById(codigo)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
-    }
 }

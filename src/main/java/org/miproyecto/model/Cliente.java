@@ -1,10 +1,8 @@
 package org.miproyecto.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.List;
+import java.math.BigDecimal;
 
 /**
  * Clase que representa un cliente en el sistema bancario.
@@ -19,51 +17,28 @@ import java.util.List;
 @Table(name = "cliente") // Especifica el nombre de la tabla en la base de datos
 public class Cliente {
 
-    /**
-     * Código único que identifica al cliente. Este campo es la clave primaria
-     * de la entidad Cliente en la base de datos.
-     */
-    @Id // Define este campo como la clave primaria de la entidad
-    @Column(length = 9) // Establece que el campo "codigo" tiene una longitud de 9
-    private String codigo;
+    @Id
+    @Column(name = "identificacion", length = 20, nullable = false, unique = true)
+    private String identificacion;
 
-    /**
-     * Nombre del cliente. Este campo se almacena como una cadena de texto.
-     */
+    @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
 
-    /**
-     * Apellido del cliente. Este campo se almacena como una cadena de texto.
-     */
-    private String apellido;
-
-    /**
-     * Edad del cliente, representada como un entero.
-     */
-    private Integer edad;
-
-    /**
-     * Número de cuenta asociado al cliente. Este campo es almacenado
-     * en la base de datos como "numero_cuenta".
-     */
-    @Column(name = "numero_cuenta") // Especifica el nombre de la columna en la base de datos
+    @Column(name = "numero_cuenta", length = 30, nullable = false, unique = true)
     private String numeroCuenta;
 
-    /**
-     * Fecha de creación de la cuenta del cliente. Se almacena en la base de datos
-     * como "fecha_creacion_cuenta" y se maneja como un objeto LocalDate.
-     */
-    @Column(name = "fecha_creacion_cuenta") // Especifica el nombre de la columna en la base de datos
-    private LocalDate fechaCreacionCuenta;
+    @Column(name = "tipo_cuenta", length = 20, nullable = false)
+    private String tipoCuenta;
 
-    /**
-     * Relación uno a muchos con la entidad Movimiento. Esta relación indica que
-     * un cliente puede tener múltiples movimientos asociados.
-     * Se utiliza la anotación JsonManagedReference para indicar que esta es
-     * la parte principal de la relación y se evitará la recursión infinita
-     * durante la serialización JSON.
-     */
-    @JsonManagedReference // Se indica que esta es la parte principal de la relación
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Movimiento> movimientos; // Lista de movimientos asociados al cliente
+    @Column(name = "saldo", precision = 15, scale = 2, nullable = false)
+    private BigDecimal saldo = BigDecimal.ZERO;
+
+    @Column(name = "estado_cuenta", length = 20, nullable = false)
+    private String estadoCuenta;
+
+    @Column(name = "numero_cliente", length = 255, nullable = false)
+    private String numeroCliente;
+
+
+
 }
